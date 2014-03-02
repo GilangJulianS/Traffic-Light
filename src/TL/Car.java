@@ -3,6 +3,9 @@ package TL;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 
 public class Car {
@@ -95,6 +98,8 @@ public class Car {
 	}
 	
 	public void draw(Graphics2D g, Image car, ImageObserver IO){
+		// Drawing the rotated image at the required drawing locations
+		
 		g.drawImage(car, rect.x, rect.y, rect.x + rect.width, rect.y+rect.height,
 				0, 0, car.getWidth(null), car.getHeight(null), IO);
 		

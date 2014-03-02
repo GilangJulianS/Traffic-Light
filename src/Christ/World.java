@@ -3,6 +3,7 @@ package Christ;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import TL.Car;
 import TL.Pedestrian;
@@ -11,7 +12,7 @@ import TL.Tank;
 public class World {
 
 	public static enum State {
-		KKMMM, HHMMM, MMMKM, MMMHH, MMKHH, MMKHM, MMHHM;
+		KKMMM, HHMMM, MMMKM, MMMHH, MMKHH, MMKHM, MMHHM, MMKKM;
 		public State next() {
 			return values()[Main.nextState[ordinal()]];
             //return values()[(ordinal() + 1) % values().length];
@@ -25,6 +26,7 @@ public class World {
 			case 4: System.out.println("MMKHH"); break;
 			case 5: System.out.println("MMKHM"); break;
 			case 6: System.out.println("MMHHM"); break;
+			case 7: System.out.println("MMKKM"); break;
 			default: break;
 			}
 		}
@@ -39,6 +41,8 @@ public class World {
 	private Rectangle leftLine, rightLine, topLine, bottomLine;
 	private boolean nabrak, macet;
 	public Pedestrian p;
+	public List<Pedestrian> pedestrians;
+	private Random rand;
 
 	public World() {
 		US = new ThreeLamps();
@@ -52,6 +56,8 @@ public class World {
 		carsRight = new ArrayList<Car>();
 		carsTop = new ArrayList<Car>();
 		carsBottom = new ArrayList<Car>();
+		pedestrians = new ArrayList<Pedestrian>();
+		rand = new Random();
 		leftLine = new Rectangle(220, 290, 20, 120);
 		rightLine = new Rectangle(455, 290, 20, 120);
 		topLine = new Rectangle(290, 220, 120, 20);
@@ -167,17 +173,47 @@ public class World {
 					car.setSpeed(0, 0);
 			}
 		}
-		if(p!=null){
+		len = pedestrians.size();
+		for(int i=0; i<len; i++){
+			p = pedestrians.get(i);
 			p.update(elapsedTime);
-			if(p.rect.x < 270)
-				p = null;
+			if(p.rect.x < 0 || p.rect.x > 700 || p.rect.y < 0 || p.rect.y > 700){
+				pedestrians.remove(i);
+				i--; len--;
+			}
 		}
 	}
 	
 	public void addPedestrian(){
-		if(p==null){
-			p = new Pedestrian(410, 230);
+		int n = rand.nextInt(4);
+		int m = rand.nextInt(2);
+		switch(n){
+		case Pedestrian.GO_DOWN:
+			if(m==0)
+				pedestrians.add(new Pedestrian(260, 0, Pedestrian.GO_DOWN));
+			else
+				pedestrians.add(new Pedestrian(412, 0, Pedestrian.GO_DOWN));
+			break;
+		case Pedestrian.GO_UP:
+			if(m==0)
+				pedestrians.add(new Pedestrian(260, 700, Pedestrian.GO_UP));
+			else
+				pedestrians.add(new Pedestrian(412, 700, Pedestrian.GO_UP));
+			break;
+		case Pedestrian.GO_RIGHT:
+			if(m==0)
+				pedestrians.add(new Pedestrian(0, 265, Pedestrian.GO_RIGHT));
+			else
+				pedestrians.add(new Pedestrian(0, 410, Pedestrian.GO_RIGHT));
+			break;
+		case Pedestrian.GO_LEFT:
+			if(m==0)
+				pedestrians.add(new Pedestrian(700, 265, Pedestrian.GO_LEFT));
+			else
+				pedestrians.add(new Pedestrian(700, 410, Pedestrian.GO_LEFT));
+			break;
 		}
+		
 	}
 	
 	public void addCar(int x, int y, int type, int code){
@@ -263,6 +299,13 @@ public class World {
 			TU.setLamp(true);
 			stateTime = Main.time[6];
 			break;
+		case MMKKM:
+			US.setLamps(true, false, false);
+			Barat.setLamps(true, true, false);
+			Timur.setLamps(true, true, false);
+			TU.setLamp(true);
+			stateTime = Main.time[7];
+			break;
 		}
 	}
 	
@@ -319,6 +362,13 @@ public class World {
 			Timur.setLamps(false, false, true);
 			TU.setLamp(true);
 			stateTime = Main.time[6];
+			break;
+		case MMKKM:
+			US.setLamps(true, false, false);
+			Barat.setLamps(true, true, false);
+			Timur.setLamps(true, true, false);
+			TU.setLamp(true);
+			stateTime = Main.time[7];
 			break;
 		}
 	}

@@ -1,6 +1,7 @@
 package Swing;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -48,7 +49,8 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 	private Car car;
 	private Graphics g;
 	private Random random;
-	private Pedestrian p;
+	private List<Pedestrian> p;
+	private static JFrame frame;
 	
 	public Panel() {
 		init();
@@ -112,23 +114,19 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 		addKeyListener(this);
 		setFocusable(true);
 		requestFocusInWindow();
-		//switchFullScreen();
 		
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
-		JFrame frame = new JFrame("Mini Tennis");
+		frame = new JFrame("Mini Tennis");
 		Panel game = new Panel();
 		frame.add(game);
 		frame.setSize(700, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setUndecorated(true);
+        //frame.setUndecorated(true);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2-20);
-        //frame.getContentPane().setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
-        //frame.pack();
         frame.setVisible(true);
-        
 	}
 	
 	public void update(Graphics g){
@@ -140,8 +138,7 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 			if(tempTime >= timeToChange){
 				tempTime = 0;
 				waitToRed = false;
-				world.suddenChange(World.State.MMMKM);
-				world.p.setSpeed(-1);
+				world.suddenChange(World.State.MMKKM);
 			}
 		}
 		if(unset && merah.getWidth(null)!=-1){
@@ -223,32 +220,37 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 					0, 0, button.getWidth(null), button.getHeight(null), this);
 		
 		carList = world.carsRight;
-		int len = carList.size();
-		for(int i=0; i<len; i++){
-			car = carList.get(i);
-			car.draw(g2d, carRight[car.imageCode], this);
+		for(int i=0; i<carList.size(); i++){
+			if(carList.get(i)!=null){	
+				car = carList.get(i);
+				car.draw(g2d, carRight[car.imageCode], this);
+			}
 		}
 		carList = world.carsLeft;
-		len = carList.size();
-		for(int i=0; i<len; i++){
-			car = carList.get(i);
-			car.draw(g2d, carLeft[car.imageCode], this);
+		for(int i=0; i<carList.size(); i++){
+			if(carList.get(i) !=null){
+				car = carList.get(i);
+				car.draw(g2d, carLeft[car.imageCode], this);
+			}
 		}
 		carList = world.carsTop;
-		len = carList.size();
-		for(int i=0; i<len; i++){
-			car = carList.get(i);
-			car.draw(g2d, carUp[car.imageCode], this);
+		for(int i=0; i<carList.size(); i++){
+			if(carList.get(i)!=null){
+				car = carList.get(i);
+				car.draw(g2d, carUp[car.imageCode], this);
+			}
 		}
 		carList = world.carsBottom;
-		len = carList.size();
-		for(int i=0; i<len; i++){
-			car = carList.get(i);
-			car.draw(g2d, carDown[car.imageCode], this);
+		for(int i=0; i<carList.size(); i++){
+			if(carList.get(i)!=null){
+				car = carList.get(i);
+				car.draw(g2d, carDown[car.imageCode], this);
+			}
 		}
-		p = world.p;
-		if(p!=null)
-			p.draw(g2d, pedestrian, this);
+		p = world.pedestrians;
+		for(int i=0; i<p.size(); i++){
+			p.get(i).draw(g2d, pedestrian, this);
+		}
 	}
 
 	@Override
@@ -259,11 +261,18 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 
 	@Override
 	public void mouseMoved(MouseEvent event) {
-		//System.out.println(event.getX() + " " + event.getY());
-		if(buttonArea.contains(event.getX(), event.getY()))
+		System.out.println(event.getX() + " " + event.getY());
+		int x, y;
+		x = event.getX();
+		y = event.getY();
+		if(buttonArea.contains(x, y))
 			hoverButton = true;
 		else
 			hoverButton = false;
+		if(boundLeft.contains(x, y) || boundRight.contains(x, y) || boundTop.contains(x, y) || boundDown.contains(x, y) || hoverButton)
+			frame.setCursor(Cursor.HAND_CURSOR);
+		else
+			frame.setCursor(Cursor.DEFAULT_CURSOR);
 	}
 
 	@Override
@@ -313,7 +322,7 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 
 	@Override
 	public void mousePressed(MouseEvent event) {
-		if(hoverButton && !waitToRed){
+		if(hoverButton && !waitToRed) {
 			if (world.state == World.State.HHMMM) {
 				waitToRed = true;
 			}
@@ -321,7 +330,6 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 			buttonPushed = true;
 			hoverButton = false;
 			world.addPedestrian();
-			world.p.setSpeed(0);
 		}
 	}
 

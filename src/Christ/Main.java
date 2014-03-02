@@ -36,8 +36,8 @@ public class Main {
 		char[] input = new char[stringinput.length()];
 		input = stringinput.toCharArray();
 
-		Main.time = new int[7];
-		Main.nextState = new int[7];
+		Main.time = new int[8];
+		Main.nextState = new int[8];
 
 		int n_time = 0, n_value = 0;
 		for (int i=0; i<input.length; ++i) {

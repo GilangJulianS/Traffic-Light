@@ -28,7 +28,7 @@ public class Pedestrian {
 	private int walktype;
 	private long time;
 	private int minus;
-	public boolean waitToCross, crossed;
+	public boolean waitToCross, crossed, crossing, finish;
 	private Random rand = new Random();
 
 	public Pedestrian(int x, int y, int walktype) {
@@ -57,6 +57,8 @@ public class Pedestrian {
 		time = 0;
 		waitToCross = false;
 		crossed = false;
+		crossing = false;
+		finish = false;
 	}
 	
 	public void turn(int walktype){
@@ -128,20 +130,38 @@ public class Pedestrian {
 					turn(GO_UP);
 				break;
 			}
-			if((rect.contains(420,245) && !crossed) || (rect.contains(420, 450) && !crossed)){
+			if(rect.contains(440,245) || rect.contains(440, 450) || rect.contains(260, 245) || rect.contains(260, 450)){
+				if(crossed && !finish){
+					int a = rand.nextInt(2);
+					if(a == 0){
+						turn(GO_UP);
+					}
+					else{
+						turn(GO_DOWN);
+					}
+					finish = true;
+				}
+				if(crossing){
+					crossed = true;
+					crossing = false;
+				}
+			}
+			if((rect.contains(420,245) || rect.contains(420, 450)) && !crossing && !crossed){
 				waitToCross = true;
+				i = 1;
 				turn(GO_LEFT);
 				setSpeed(0, 0);
 			}
-			else if((rect.contains(280, 245) && !crossed) || (rect.contains(280, 450) && !crossed)){
+			else if((rect.contains(280, 245) || rect.contains(280, 450)) && !crossing && !crossed){
 				waitToCross = true;
+				i = 1;
 				turn(GO_RIGHT);
 				setSpeed(0, 0);
 			}
-			if((rect.contains(420,245) && crossed) || (rect.contains(420, 450) && crossed)
-					|| (rect.contains(280, 245) && !crossed) || (rect.contains(280, 450) && !crossed)){
-				int a = rand.nextInt(2);
+			if(rect.contains(350,450) || rect.contains(350,245)){
+				crossing = true;
 			}
+			
 		}
 	}
 

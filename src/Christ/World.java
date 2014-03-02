@@ -35,7 +35,7 @@ public class World {
 	public State state;
 	private ThreeLamps US, Barat, Timur;
 	private OneLamp TU;
-	private long deltaTime, stateTime;
+	private long deltaTime, stateTime, pedDelayTime, spawnTime;
 	public List<Car> carsLeft, carsRight, carsTop, carsBottom;
 	private Car car;
 	private Rectangle leftLine, rightLine, topLine, bottomLine;
@@ -50,6 +50,7 @@ public class World {
 		Timur = new ThreeLamps();
 		TU = new OneLamp();
 		deltaTime = 0;
+		pedDelayTime = 0;
 		state = State.MMHHM;
 		stateTime = 5;
 		carsLeft = new ArrayList<Car>();
@@ -64,10 +65,18 @@ public class World {
 		bottomLine = new Rectangle(290, 460, 120, 20);
 		nabrak = false;
 		macet= false;
+		spawnTime = 500+rand.nextInt(2500);
 	}
 
 	public void update(long elapsedTime) {
 		deltaTime += elapsedTime;
+		pedDelayTime += elapsedTime;
+		if(pedDelayTime >= spawnTime){
+			pedDelayTime = 0;
+			spawnTime = 500+rand.nextInt(2500);
+			addPedestrian();
+			generateCar();
+		}
 		if(deltaTime >= stateTime){
 			changeState();
 			if(macet){
@@ -182,7 +191,6 @@ public class World {
 			p.update(elapsedTime);
 			if(nyebrang && p.waitToCross){
 				p.waitToCross = false;
-				p.crossed = true;
 				p.walk();
 			}
 				
@@ -380,6 +388,36 @@ public class World {
 			TU.setLamp(true);
 			stateTime = Main.time[7];
 			break;
+		}
+	}
+	
+	public void generateCar(){
+		int i = rand.nextInt(2);
+		int code = rand.nextInt(10);
+		int type = rand.nextInt(4);
+		if(type==0){
+			if(i==0 || code==9)
+				addCar(0-(Car.DEFAULT_WIDTH_L)-20, 305-(Car.DEFAULT_HEIGHT_L/2), Car.GO_RIGHT, code);
+			else
+				addCar(0-(Car.DEFAULT_WIDTH_L)-20, 332-(Car.DEFAULT_HEIGHT_L/2), Car.GO_RIGHT, code);
+		}
+		else if(type==1){
+			if(i==0 || code ==9)
+				addCar(700+(Car.DEFAULT_WIDTH_L/2), 367-(Car.DEFAULT_HEIGHT_L/2), Car.GO_LEFT, code);
+			else
+				addCar(700+(Car.DEFAULT_WIDTH_L/2), 393-(Car.DEFAULT_HEIGHT_L/2), Car.GO_LEFT, code);
+		}
+		else if(type==2){
+			if(i==0 || code==9)
+				addCar(305-(Car.DEFAULT_WIDTH_P/2), 700+(Car.DEFAULT_HEIGHT_P/2), Car.GO_UP, code);
+			else
+				addCar(332-(Car.DEFAULT_WIDTH_P/2), 700+(Car.DEFAULT_HEIGHT_P/2), Car.GO_UP, code);
+		}
+		else if(type==3){
+			if(i==0 || code==9)
+				addCar(367-(Car.DEFAULT_WIDTH_P/2), -(Car.DEFAULT_HEIGHT_P/2)-20, Car.GO_DOWN, code);
+			else
+				addCar(394-(Car.DEFAULT_WIDTH_P/2), -(Car.DEFAULT_HEIGHT_P/2)-20, Car.GO_DOWN, code);
 		}
 	}
 	

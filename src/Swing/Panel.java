@@ -118,12 +118,12 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
-		frame = new JFrame("Mini Tennis");
+		frame = new JFrame("Traffic Light");
 		Panel game = new Panel();
 		frame.add(game);
 		frame.setSize(700, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //frame.setUndecorated(true);
+        frame.setUndecorated(true);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2-20);
         frame.setVisible(true);
@@ -261,7 +261,7 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 
 	@Override
 	public void mouseMoved(MouseEvent event) {
-		System.out.println(event.getX() + " " + event.getY());
+		//System.out.println(event.getX() + " " + event.getY());
 		int x, y;
 		x = event.getX();
 		y = event.getY();
@@ -329,7 +329,6 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 			tempTime = 0;
 			buttonPushed = true;
 			hoverButton = false;
-			world.addPedestrian();
 		}
 	}
 

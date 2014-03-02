@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.ImageObserver;
+import java.util.Random;
 
 public class Pedestrian {
 
@@ -27,6 +28,8 @@ public class Pedestrian {
 	private int walktype;
 	private long time;
 	private int minus;
+	public boolean waitToCross, crossed;
+	private Random rand = new Random();
 
 	public Pedestrian(int x, int y, int walktype) {
 		this.walktype = walktype;
@@ -52,10 +55,16 @@ public class Pedestrian {
 		}
 		rect = new Rectangle(x, y, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		time = 0;
+		waitToCross = false;
+		crossed = false;
 	}
 	
 	public void turn(int walktype){
 		this.walktype = walktype;
+		walk();
+	}
+	
+	public void walk(){
 		switch (walktype) {
 		case GO_LEFT:
 			speedX = DEFAULT_SPEED_LEFT;
@@ -73,53 +82,67 @@ public class Pedestrian {
 			speedX = 0;
 			speedY = DEFAULT_SPEED_DOWN;
 			break;
-
 		}
 	}
 
 	public void update(long elapsedTime) {
-		rect.x += speedX;
-		rect.y += speedY;
+		
 		time += elapsedTime;
-		if (time >= 50) {
-			i += minus;
-			time = 0;
-			if (i < 0) {
-				minus = 1;
+		if(!waitToCross){
+			rect.x += speedX;
+			rect.y += speedY;
+			if (time >= 50) {
 				i += minus;
-			} else if (i > 2) {
-				minus = -1;
-				i += minus;
+				time = 0;
+				if (i < 0) {
+					minus = 1;
+					i += minus;
+				} else if (i > 2) {
+					minus = -1;
+					i += minus;
+				}
+			}
+			switch(walktype){
+			case GO_DOWN:
+				if(rect.contains(280, 284))
+					turn(GO_LEFT);
+				else if(rect.contains(420, 284))
+					turn(GO_RIGHT);
+				break;
+			case GO_LEFT:
+				if(rect.contains(414,280))
+					turn(GO_UP);
+				else if(rect.contains(414, 422))
+					turn(GO_DOWN);
+				break;
+			case GO_UP:
+				if(rect.contains(420, 412))
+					turn(GO_RIGHT);
+				else if(rect.contains(275, 412))
+					turn(GO_LEFT);
+				break;
+			case GO_RIGHT:
+				if(rect.contains(280, 422))
+					turn(GO_DOWN);
+				else if(rect.contains(280, 280))
+					turn(GO_UP);
+				break;
+			}
+			if((rect.contains(420,245) && !crossed) || (rect.contains(420, 450) && !crossed)){
+				waitToCross = true;
+				turn(GO_LEFT);
+				setSpeed(0, 0);
+			}
+			else if((rect.contains(280, 245) && !crossed) || (rect.contains(280, 450) && !crossed)){
+				waitToCross = true;
+				turn(GO_RIGHT);
+				setSpeed(0, 0);
+			}
+			if((rect.contains(420,245) && crossed) || (rect.contains(420, 450) && crossed)
+					|| (rect.contains(280, 245) && !crossed) || (rect.contains(280, 450) && !crossed)){
+				int a = rand.nextInt(2);
 			}
 		}
-		switch(walktype){
-		case GO_DOWN:
-			if(rect.contains(280, 284))
-				turn(GO_LEFT);
-			else if(rect.contains(420, 284))
-				turn(GO_RIGHT);
-			break;
-		case GO_LEFT:
-			if(rect.contains(414,280))
-				turn(GO_UP);
-			else if(rect.contains(414, 422))
-				turn(GO_DOWN);
-			break;
-		case GO_UP:
-			if(rect.contains(420, 412))
-				turn(GO_RIGHT);
-			else if(rect.contains(275, 412))
-				turn(GO_LEFT);
-			break;
-		case GO_RIGHT:
-			if(rect.contains(280, 422))
-				turn(GO_DOWN);
-			else if(rect.contains(280, 280))
-				turn(GO_UP);
-			break;
-			
-		}
-
 	}
 
 	public void setSpeed(int speedX, int speedY) {

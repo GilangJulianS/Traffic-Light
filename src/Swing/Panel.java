@@ -69,23 +69,23 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 		carRight = new Image[10];
 		carUp = new Image[10];
 		carDown = new Image[10];
-		String base = "src/resource/";
+		String base = "/resource/";
 		try {
-			bg = ImageIO.read(new File(base +"BackgroundTBO.png"));
-			merah = ImageIO.read(new File(base+ "m.png"));
-			merahkuning = ImageIO.read(new File(base+ "mk.png"));
-			hijau = ImageIO.read(new File(base+"h.png"));
-			singleOn = ImageIO.read(new File(base+ "sm.png"));
-			singleOff = ImageIO.read(new File(base+ "sw.png"));
+			bg = ImageIO.read(getClass().getResource(base+"BackgroundTBO.png"));
+			merah = ImageIO.read(getClass().getResource(base+ "m.png"));
+			merahkuning = ImageIO.read(getClass().getResource(base+ "mk.png"));
+			hijau = ImageIO.read(getClass().getResource(base+"h.png"));
+			singleOn = ImageIO.read(getClass().getResource(base+ "sm.png"));
+			singleOff = ImageIO.read(getClass().getResource(base+ "sw.png"));
 			for(int i=1; i<11; i++){
-				carRight[i-1] = ImageIO.read(new File(base+"carl"+i+".png"));
-				carLeft[i-1] = ImageIO.read(new File(base+"carr"+i+".png"));
-				carDown[i-1] = ImageIO.read(new File(base+"caru"+i+".png"));
-				carUp[i-1] = ImageIO.read(new File(base+"card"+i+".png"));
+				carRight[i-1] = ImageIO.read(getClass().getResource(base+"carl"+i+".png"));
+				carLeft[i-1] = ImageIO.read(getClass().getResource(base+"carr"+i+".png"));
+				carDown[i-1] = ImageIO.read(getClass().getResource(base+"caru"+i+".png"));
+				carUp[i-1] = ImageIO.read(getClass().getResource(base+"card"+i+".png"));
 			}
-			button = ImageIO.read(new File(base+ "Button.png"));
-			pushButton = ImageIO.read(new File(base+ "PushButton.png"));
-			pedestrian = ImageIO.read(new File(base+ "Pedestrian.png"));
+			button = ImageIO.read(getClass().getResource(base+ "Button.png"));
+			pushButton = ImageIO.read(getClass().getResource(base+ "PushButton.png"));
+			pedestrian = ImageIO.read(getClass().getResource(base+ "Pedestrian.png"));
 		} catch (IOException e) {
 			System.out.println("file bg not found");
 		}

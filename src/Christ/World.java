@@ -69,7 +69,6 @@ public class World {
 	public void update(long elapsedTime) {
 		deltaTime += elapsedTime;
 		if(deltaTime >= stateTime){
-			//System.out.println(deltaTime + " " + stateTime);
 			changeState();
 			if(macet){
 				macet = false;
@@ -173,15 +172,26 @@ public class World {
 					car.setSpeed(0, 0);
 			}
 		}
-		len = pedestrians.size();
-		for(int i=0; i<len; i++){
+		boolean nyebrang;
+		if(!US.isGreen())
+			nyebrang = true;
+		else
+			nyebrang = false;
+		for(int i=0; i<pedestrians.size(); i++){
 			p = pedestrians.get(i);
 			p.update(elapsedTime);
+			if(nyebrang && p.waitToCross){
+				p.waitToCross = false;
+				p.crossed = true;
+				p.walk();
+			}
+				
 			if(p.rect.x < 0 || p.rect.x > 700 || p.rect.y < 0 || p.rect.y > 700){
 				pedestrians.remove(i);
 				i--; len--;
 			}
 		}
+		
 	}
 	
 	public void addPedestrian(){

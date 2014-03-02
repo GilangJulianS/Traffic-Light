@@ -28,15 +28,16 @@ import Christ.Main;
 import Christ.ThreeLamps;
 import Christ.World;
 import TL.Car;
+import TL.Pedestrian;
 
 @SuppressWarnings("serial")
 public class Panel extends JPanel implements Runnable,MouseListener, MouseMotionListener,KeyListener{
 
 	
 	private static long BUTTON_DELAY_TIME = 2000;
-	private Image bg, merah, merahkuning, hijau, singleOn, singleOff, button, pushButton;
-	private Image[] carLeft, carRight, carUp, carDown;
 	private AffineTransform left, down, right, top, single;
+	private Image bg, merah, merahkuning, hijau, singleOn, singleOff, button, pushButton, pedestrian;
+	private Image[] carLeft, carRight, carUp, carDown;
 	private Rectangle boundLeft, boundRight, boundTop, boundDown;
 	private World world;
 	private long lastUpdate, elapsedTime;
@@ -47,7 +48,7 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 	private Car car;
 	private Graphics g;
 	private Random random;
-	
+	private Pedestrian p;
 	
 	public Panel() {
 		init();
@@ -82,6 +83,7 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 			}
 			button = ImageIO.read(new File(base+ "Button.png"));
 			pushButton = ImageIO.read(new File(base+ "PushButton.png"));
+			pedestrian = ImageIO.read(new File(base+ "Pedestrian.png"));
 		} catch (IOException e) {
 			System.out.println("file bg not found");
 		}
@@ -129,7 +131,6 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
         
 	}
 	
-	
 	public void update(Graphics g){
 		elapsedTime = System.currentTimeMillis() - lastUpdate;
 		lastUpdate = System.currentTimeMillis();
@@ -140,6 +141,7 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 				tempTime = 0;
 				waitToRed = false;
 				world.suddenChange(World.State.MMMKM);
+				world.p.setSpeed(-1);
 			}
 		}
 		if(unset && merah.getWidth(null)!=-1){
@@ -244,8 +246,11 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 			car = carList.get(i);
 			car.draw(g2d, carDown[car.imageCode], this);
 		}
+		p = world.p;
+		if(p!=null)
+			p.draw(g2d, pedestrian, this);
 	}
-	
+
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
 		// TODO Auto-generated method stub
@@ -270,9 +275,9 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 		y = event.getY();
 		if(boundLeft.contains(x, y)){
 			if(i==0 || code==9)
-				world.addCar(-(Car.DEFAULT_WIDTH_L/2), 305-(Car.DEFAULT_HEIGHT_L/2), Car.GO_RIGHT, code);
+				world.addCar(0-(Car.DEFAULT_WIDTH_L)-20, 305-(Car.DEFAULT_HEIGHT_L/2), Car.GO_RIGHT, code);
 			else
-				world.addCar(-(Car.DEFAULT_WIDTH_L/2), 332-(Car.DEFAULT_HEIGHT_L/2), Car.GO_RIGHT, code);
+				world.addCar(0-(Car.DEFAULT_WIDTH_L)-20, 332-(Car.DEFAULT_HEIGHT_L/2), Car.GO_RIGHT, code);
 		}
 		else if(boundRight.contains(x, y)){
 			if(i==0 || code ==9)
@@ -288,9 +293,9 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 		}
 		else if(boundTop.contains(x, y)){
 			if(i==0 || code==9)
-				world.addCar(367-(Car.DEFAULT_WIDTH_P/2), -(Car.DEFAULT_HEIGHT_P/2), Car.GO_DOWN, code);
+				world.addCar(367-(Car.DEFAULT_WIDTH_P/2), -(Car.DEFAULT_HEIGHT_P/2)-20, Car.GO_DOWN, code);
 			else
-				world.addCar(394-(Car.DEFAULT_WIDTH_P/2), -(Car.DEFAULT_HEIGHT_P/2), Car.GO_DOWN, code);
+				world.addCar(394-(Car.DEFAULT_WIDTH_P/2), -(Car.DEFAULT_HEIGHT_P/2)-20, Car.GO_DOWN, code);
 		}
 	}
 
@@ -308,11 +313,15 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 
 	@Override
 	public void mousePressed(MouseEvent event) {
-		if(hoverButton){
-			waitToRed = true;
+		if(hoverButton && !waitToRed){
+			if (world.state == World.State.HHMMM) {
+				waitToRed = true;
+			}
 			tempTime = 0;
 			buttonPushed = true;
 			hoverButton = false;
+			world.addPedestrian();
+			world.p.setSpeed(0);
 		}
 	}
 

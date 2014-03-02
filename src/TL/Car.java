@@ -25,7 +25,6 @@ public class Car {
 	public int type, imageCode;
 	public boolean isModified;
 	
-	
 	public Car(int x, int y, int type, int imageCode) {
 		this.type = type;
 		isModified = false;

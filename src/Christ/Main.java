@@ -8,7 +8,8 @@ import java.io.IOException;
 public class Main {
 
 	public static int[] time;
-	
+	public static int[] nextState;
+
 	public static void main(String args[]) {
 		
 		String stringinput = new String();
@@ -36,7 +37,8 @@ public class Main {
 		input = stringinput.toCharArray();
 
 		Main.time = new int[7];
- 
+		Main.nextState = new int[7];
+
 		int n_time = 0, n_value = 0;
 		for (int i=0; i<input.length; ++i) {
 			if (input[i] == 'q') {
@@ -46,7 +48,9 @@ public class Main {
 			} else if (input[i] == ' ') {
 				Main.time[n_time] = n_value;
 				n_value = 0;
-				i += 4; //kenapa +4? harusnya +3
+				i += 2;
+				nextState[n_time] = input[i] - '0';
+				i += 2; //kenapa +4? harusnya +3
 			} else {
 				n_value *= 10;
 				n_value += input[i] - '0';
@@ -54,7 +58,8 @@ public class Main {
 		}
 		
 		for (int i=0; i<Main.time.length; ++i) {
-			System.out.println(Main.time[i]);
+			System.out.println("Time " + Main.time[i]);
+			System.out.println("nextState " + Main.nextState[i]);
 		}
 	}
 	

@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import TL.Car;
+import TL.Pedestrian;
 import TL.Tank;
 
 public class World {
 
-	
-	
 	public static enum State {
 		KKMMM, HHMMM, MMMKM, MMMHH, MMKHH, MMKHM, MMHHM;
 		public State next() {
-            return values()[(ordinal() + 1) % values().length];
+			return values()[Main.nextState[ordinal()]];
+            //return values()[(ordinal() + 1) % values().length];
 		}
-		public void print(){
+		public void print() {
 			switch(ordinal()){
 			case 0: System.out.println("KKMMM"); break;
 			case 1: System.out.println("HHMMM"); break;
@@ -30,14 +30,15 @@ public class World {
 		}
 	};
 	
-	private State state;
+	public State state;
 	private ThreeLamps US, Barat, Timur;
 	private OneLamp TU;
 	private long deltaTime, stateTime;
 	public List<Car> carsLeft, carsRight, carsTop, carsBottom;
 	private Car car;
 	private Rectangle leftLine, rightLine, topLine, bottomLine;
-	private boolean nabrak;
+	private boolean nabrak, macet;
+	public Pedestrian p;
 
 	public World() {
 		US = new ThreeLamps();
@@ -56,6 +57,7 @@ public class World {
 		topLine = new Rectangle(290, 220, 120, 20);
 		bottomLine = new Rectangle(290, 460, 120, 20);
 		nabrak = false;
+		macet= false;
 	}
 
 	public void update(long elapsedTime) {
@@ -63,13 +65,23 @@ public class World {
 		if(deltaTime >= stateTime){
 			//System.out.println(deltaTime + " " + stateTime);
 			changeState();
+			if(macet){
+				macet = false;
+			}
+		}
+		if ((carsTop.size() >= 2 * (carsLeft.size() + carsRight.size())
+				|| carsBottom.size() >= 2 * (carsLeft.size() + carsRight.size()))
+				&& (carsTop.size() > 10 || carsBottom.size() > 10) && !macet && state!=State.KKMMM && state!=State.HHMMM) {
+			suddenChange(State.KKMMM);
+			macet = true;
+			System.out.println("masuk sini");
 		}
 		int len = carsLeft.size();
 		for(int i=len-1; i>=0; i--){
 			car = carsLeft.get(i);
 			car.update();
 			nabrak = false;
-			if(car.rect.x < -30 || car.rect.x>730 || car.rect.y < -30 || car.rect.y > 730){
+			if(car.rect.x < -60 || car.rect.x>730 || car.rect.y < -60 || car.rect.y > 730){
 				carsLeft.remove(i);
 				i--; len--;
 			}
@@ -88,14 +100,13 @@ public class World {
 					car.setSpeed(0, 0);
 				}
 			}
-			
 		}
 		len = carsRight.size();
 		for(int i=len-1; i>=0; i--){
 			car = carsRight.get(i);
 			car.update();
 			nabrak = false;
-			if(car.rect.x < -30 || car.rect.x>730 || car.rect.y < -30 || car.rect.y > 730){
+			if(car.rect.x < -60 || car.rect.x>730 || car.rect.y < -60 || car.rect.y > 730){
 				carsRight.remove(i);
 				i--; len--;
 			}
@@ -111,14 +122,13 @@ public class World {
 				if(rightLine.intersects(car.colliBound))
 					car.setSpeed(0, 0);
 			}
-			
 		}
 		len = carsTop.size();
 		for(int i=len-1; i>=0; i--){
 			car = carsTop.get(i);
 			car.update();
 			nabrak = false;
-			if(car.rect.x < -30 || car.rect.x>730 || car.rect.y < -30 || car.rect.y > 730){
+			if(car.rect.x < -60 || car.rect.x>730 || car.rect.y < -60 || car.rect.y > 730){
 				carsTop.remove(i);
 			}
 			for(int j=i-1; j>=0 && !nabrak; j--){
@@ -140,7 +150,7 @@ public class World {
 			car = carsBottom.get(i);
 			car.update();
 			nabrak = false;
-			if(car.rect.x < -30 || car.rect.x>730 || car.rect.y < -30 || car.rect.y > 730){
+			if(car.rect.x < -60 || car.rect.x>730 || car.rect.y < -60 || car.rect.y > 730){
 				carsBottom.remove(i);
 				i--; len--;
 			}
@@ -156,7 +166,17 @@ public class World {
 				if(bottomLine.intersects(car.colliBound))
 					car.setSpeed(0, 0);
 			}
-			
+		}
+		if(p!=null){
+			p.update(elapsedTime);
+			if(p.rect.x < 270)
+				p = null;
+		}
+	}
+	
+	public void addPedestrian(){
+		if(p==null){
+			p = new Pedestrian(410, 230);
 		}
 	}
 	
@@ -189,7 +209,7 @@ public class World {
 			default: break;
 		}
 	}
-	
+
 	public void suddenChange(State newState){
 		deltaTime = 0;
 		state = newState;

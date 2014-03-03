@@ -51,6 +51,8 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 	private Random random;
 	private List<Pedestrian> p;
 	private static JFrame frame;
+	private StringBuilder str = new StringBuilder();
+	private int frameRate;
 	
 	public Panel() {
 		init();
@@ -63,7 +65,7 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 	}
 
 	public void init(){
-		setSize(800, 600);
+		setSize(700, 700);
 		setBackground(Color.white);
 		carLeft = new Image[10];
 		carRight = new Image[10];
@@ -108,6 +110,7 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 		buttonPushed = false;
 		waitToRed = false;
 		tempTime = 0;
+		frameRate = 0;
 		timeToChange = BUTTON_DELAY_TIME;
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -135,7 +138,7 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 		world.update(elapsedTime);
 		if(waitToRed){
 			tempTime += elapsedTime;
-			if(tempTime >= timeToChange){
+			if(tempTime >= Main.pedestrian_time){
 				tempTime = 0;
 				waitToRed = false;
 				world.suddenChange(World.State.MMKKM);
@@ -251,6 +254,28 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 		for(int i=0; i<p.size(); i++){
 			p.get(i).draw(g2d, pedestrian, this);
 		}
+		g2d.setColor(Color.white);
+		str = new StringBuilder();
+		str.append("Total Time : ");
+		str.append(String.format("%.2f", ((float)world.runTime/1000)));
+		g2d.drawString(str.toString(), 80, 90);
+		str = new StringBuilder();
+		str.append("State Time : ");
+		str.append(String.format("%.2f", ((float)world.deltaTime/1000)));
+		g2d.drawString(str.toString(), 80, 110);
+		str = new StringBuilder();
+		str.append("State : ");
+		str.append(world.state.toString());
+		g2d.drawString(str.toString(), 80, 130);
+		if(lastUpdate%500 <= 20){	
+			frameRate = (int)(1000/elapsedTime);
+		}
+		str = new StringBuilder();
+		str.append("Frame Rate : ");
+		str.append(frameRate);
+		str.append(" fps");
+		g2d.drawString(str.toString(), 80, 150);
+		
 	}
 
 	@Override
@@ -362,7 +387,7 @@ public class Panel extends JPanel implements Runnable,MouseListener, MouseMotion
 	@Override
 	public void keyReleased(KeyEvent key) {
 		if(key.getKeyCode() == KeyEvent.VK_ESCAPE){
-			System.out.println("escape");
+			//System.out.println("escape");
 			System.exit(0);
 		}
 	}

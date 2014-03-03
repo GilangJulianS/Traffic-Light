@@ -30,12 +30,28 @@ public class World {
 			default: break;
 			}
 		}
+		@Override
+		public String toString(){
+			switch(ordinal()){
+			case 0: return "KKMMM";
+			case 1: return "HHMMM";
+			case 2: return "MMMKM";
+			case 3: return "MMMHH";
+			case 4: return "MMKHH";
+			case 5: return "MMKHM";
+			case 6: return "MMHHM";
+			case 7: return "MMKKM";
+			default: return "";
+			}
+		}
 	};
 	
 	public State state;
 	private ThreeLamps US, Barat, Timur;
 	private OneLamp TU;
-	private long deltaTime, stateTime, pedDelayTime, spawnTime;
+	private long  stateTime, pedDelayTime, spawnTime;
+	public long deltaTime;
+	public int runTime;
 	public List<Car> carsLeft, carsRight, carsTop, carsBottom;
 	private Car car;
 	private Rectangle leftLine, rightLine, topLine, bottomLine;
@@ -51,6 +67,7 @@ public class World {
 		TU = new OneLamp();
 		deltaTime = 0;
 		pedDelayTime = 0;
+		runTime = 0;
 		state = State.MMHHM;
 		stateTime = 5;
 		carsLeft = new ArrayList<Car>();
@@ -69,8 +86,12 @@ public class World {
 	}
 
 	public void update(long elapsedTime) {
+		if(elapsedTime < 1000000)
+			runTime += (int)elapsedTime;
 		deltaTime += elapsedTime;
 		pedDelayTime += elapsedTime;
+		
+		
 		if(pedDelayTime >= spawnTime){
 			pedDelayTime = 0;
 			spawnTime = 500+rand.nextInt(2500);
@@ -88,7 +109,6 @@ public class World {
 				&& (carsTop.size() > 10 || carsBottom.size() > 10) && !macet && state!=State.KKMMM && state!=State.HHMMM) {
 			suddenChange(State.KKMMM);
 			macet = true;
-			System.out.println("masuk sini");
 		}
 		int len = carsLeft.size();
 		for(int i=len-1; i>=0; i--){
@@ -107,7 +127,6 @@ public class World {
 			}
 			if(car.isModified && !nabrak){
 				car.resetSpeed();
-				//System.out.println("reset");
 			}
 			if(Barat.isRed() || Barat.isYellow()){
 				if(leftLine.intersects(car.colliBound)){
@@ -182,7 +201,7 @@ public class World {
 			}
 		}
 		boolean nyebrang;
-		if(!US.isGreen())
+		if(US.isRed() && !US.isYellow())
 			nyebrang = true;
 		else
 			nyebrang = false;

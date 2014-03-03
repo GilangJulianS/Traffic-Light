@@ -161,7 +161,6 @@ public class Pedestrian {
 			if(rect.contains(350,450) || rect.contains(350,245)){
 				crossing = true;
 			}
-			
 		}
 	}
 

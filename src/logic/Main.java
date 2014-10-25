@@ -1,4 +1,4 @@
-package Christ;
+package logic;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

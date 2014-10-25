@@ -1,13 +1,13 @@
-package Christ;
+package logic;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import TL.Car;
-import TL.Pedestrian;
-import TL.Tank;
+import objects.Car;
+import objects.Pedestrian;
+import objects.Tank;
 
 public class World {
 

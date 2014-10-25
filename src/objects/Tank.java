@@ -1,4 +1,4 @@
-package TL;
+package objects;
 
 import java.awt.Rectangle;
 

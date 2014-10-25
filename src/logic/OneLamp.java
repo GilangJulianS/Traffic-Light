@@ -1,4 +1,4 @@
-package Christ;
+package logic;
 
 public class OneLamp {
 

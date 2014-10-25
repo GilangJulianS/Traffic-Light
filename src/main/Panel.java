@@ -1,4 +1,4 @@
-package Swing;
+package main;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -25,11 +25,11 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import Christ.Main;
-import Christ.ThreeLamps;
-import Christ.World;
-import TL.Car;
-import TL.Pedestrian;
+import logic.Main;
+import logic.ThreeLamps;
+import logic.World;
+import objects.Car;
+import objects.Pedestrian;
 
 @SuppressWarnings("serial")
 public class Panel extends JPanel implements Runnable,MouseListener, MouseMotionListener,KeyListener{
